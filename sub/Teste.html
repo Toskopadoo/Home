@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <script>
+        const webhookURL = '';
+        
+        // apenas testes
+        const data = {
+            content: '✅' + new Date().toLocaleString()
+        };
+        
+        fetch(webhookURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .catch(error => {});
+    </script>
+</head>
+<body>
+</body>
+</html>
