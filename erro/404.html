@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Não Encontrada | toskopado.site</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #000;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(80,80,80,0.2) 1px, transparent 1px),
+                radial-gradient(circle at 50% 50%, rgba(120,120,120,0.1) 1px, transparent 1px);
+            background-size: 40px 40px, 80px 80px;
+            animation: moveBG 10s linear infinite;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .error-box {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { border-color: rgba(255, 0, 0, 0.3); }
+            50% { border-color: rgba(255, 0, 0, 0.7); }
+            100% { border-color: rgba(255, 0, 0, 0.3); }
+        }
+        
+        .hacker-text {
+            position: fixed;
+            color: rgba(220, 220, 220, 0.7);
+            pointer-events: none;
+            z-index: -1;
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+        
+        .hacker-text.glow {
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 0 10px rgba(210, 210, 210, 0.8),
+                         0 0 20px rgba(170, 170, 170, 0.6);
+        }
+
+        .fall-down {
+            animation: fallDown linear forwards;
+        }
+        .fall-up {
+            animation: fallUp linear forwards;
+        }
+        .fall-left {
+            animation: fallLeft linear forwards;
+        }
+        .fall-right {
+            animation: fallRight linear forwards;
+        }
+
+        @keyframes moveBG {
+            0% {
+                background-position: 0 0, 0 0;
+            }
+            100% {
+                background-position: 40px 40px, 80px 80px;
+            }
+        }
+
+        @keyframes fallDown {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+        @keyframes fallUp {
+            to {
+                transform: translateY(-100vh);
+            }
+        }
+        @keyframes fallLeft {
+            to {
+                transform: translateX(-100vw);
+            }
+        }
+        @keyframes fallRight {
+            to {
+                transform: translateX(100vw);
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-200 flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-md mx-auto">
+        <div class="error-box bg-gray-900 rounded-lg p-8 text-center">
+            <div class="mb-6">
+                <i class="fas fa-exclamation-triangle text-red-500 text-5xl mb-4"></i>
+                <h1 class="text-3xl font-bold mb-2">404 - Página Não Encontrada</h1>
+                <p class="text-gray-400">Esta página ainda não foi criada ou está em desenvolvimento.</p>
+            </div>
+            
+            <div class="mt-6">
+                <p class="text-gray-400 mb-4">Você será redirecionado automaticamente em:</p>
+                <div id="countdown" class="text-2xl font-mono text-red-400">5</div>
+            </div>
+            
+            <div class="mt-8">
+                <a href="/" class="inline-block bg-gray-800 hover:bg-gray-700 border border-gray-600 text-center py-2 px-6 rounded-lg font-medium">
+                    <i class="fas fa-arrow-left mr-2"></i> Voltar Agora
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const characters = '01ハッカー｡◕‿◕｡┐(´∀｀)┌ﾟ+*:;ﾟｲΣ◖⚆ᴥ⚆◗✖╰⋃╯⌐■-■';
+        const directions = [
+            'fall-down', 'fall-up', 
+            'fall-left', 'fall-right'
+        ];
+        
+        function createHackerText() {
+            const letter = document.createElement('div');
+            const useGlow = Math.random() < 0.3;
+            letter.className = `hacker-text ${directions[Math.floor(Math.random() * directions.length)]} ${useGlow ? 'glow' : ''}`;
+            letter.textContent = characters[Math.floor(Math.random() * characters.length)];
+            
+            letter.style.left = `${Math.random() * 100}vw`;
+            letter.style.top = `${Math.random() * 100}vh`;
+            letter.style.animationDuration = `${5 + Math.random() * 5}s`;
+            letter.style.opacity = `${0.5 + Math.random() * 0.4}`;
+            letter.style.transform = `rotate(${Math.random() * 360}deg)`;
+            
+            document.body.appendChild(letter);
+            
+            setTimeout(() => {
+                letter.remove();
+            }, 10000);
+        }
+        
+        setInterval(() => {
+            createHackerText();
+            setTimeout(createHackerText, 100);
+            setTimeout(createHackerText, 200);
+        }, 300);
+       
+        let seconds = 5;
+        const countdown = document.getElementById('countdown');
+        const timer = setInterval(() => {
+            seconds--;
+            countdown.textContent = seconds;
+            
+            if (seconds <= 0) {
+                clearInterval(timer);
+                window.location.href = '/';
+            }
+        }, 1000);
+      
+        window.addEventListener('scroll', (e) => {
+            window.scrollTo(0, 0);
+        });
+    </script>
+</body>
+  </html>
