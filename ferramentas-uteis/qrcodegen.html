@@ -18,109 +18,47 @@
                 radial-gradient(circle at 50% 50%, rgba(120,120,120,0.1) 1px, transparent 1px);
             background-size: 40px 40px, 80px 80px;
             animation: moveBG 10s linear infinite;
-            overflow-x: hidden;
             min-height: 100vh;
             padding: 20px;
         }
-        
-        .link-item {
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .link-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+
+        .qr-center-image {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 3px solid white;
+            object-fit: cover;
+            background: white;
         }
 
-        .btn-generate {
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .btn-generate:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        .qr-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 0 auto;
         }
 
         @keyframes moveBG {
-            0% {
-                background-position: 0 0, 0 0;
-            }
-            100% {
-                background-position: 40px 40px, 80px 80px;
-            }
-        }
-
-        .hacker-text {
-            position: fixed;
-            color: rgba(220, 220, 220, 0.7);
-            pointer-events: none;
-            z-index: -1;
-            font-family: monospace;
-            font-size: 18px;
-            font-weight: bold;
-            text-shadow: 0 0 5px rgba(255,255,255,0.5);
-        }
-        
-        .hacker-text.glow {
-            color: rgba(255, 255, 255, 0.9);
-            text-shadow: 0 0 10px rgba(210, 210, 210, 0.8),
-                         0 0 20px rgba(170, 170, 170, 0.6);
-        }
-
-        .fall-down {
-            animation: fallDown linear forwards;
-        }
-        .fall-up {
-            animation: fallUp linear forwards;
-        }
-        .fall-left {
-            animation: fallLeft linear forwards;
-        }
-        .fall-right {
-            animation: fallRight linear forwards;
-        }
-
-        @keyframes fallDown {
-            to {
-                transform: translateY(100vh);
-            }
-        }
-        @keyframes fallUp {
-            to {
-                transform: translateY(-100vh);
-            }
-        }
-        @keyframes fallLeft {
-            to {
-                transform: translateX(-100vw);
-            }
-        }
-        @keyframes fallRight {
-            to {
-                transform: translateX(100vw);
-            }
-        }
-
-        #qrcode {
-            transition: all 0.3s ease;
-        }
-        
-        #qrcode:hover {
-            transform: scale(1.03);
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 40px 40px, 80px 80px; }
         }
     </style>
 </head>
 <body class="text-gray-200 flex flex-col items-center justify-center p-4">
+  
+    <img id="central-logo" src="https://dl.dropboxusercontent.com/scl/fi/zy78yy4aosfpctczzud08/1749569716497.jpeg?rlkey=arge6zrt04sw6qvrrx1euipg3&dl=0" 
+         style="display: none;" 
+         alt="Logo Central">
+
     <div class="w-full max-w-md mx-auto">
-      isso
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold mb-2">Gerador de QR Code</h1>
-            <p class="text-gray-400">Converta links em códigos QR</p>
+            <p class="text-gray-400">Converta links em códigos QR personalizados</p>
         </div>
         
-      
         <div class="mb-6">
             <label for="qr-input" class="block text-sm font-medium text-gray-300 mb-2">Digite o texto ou URL:</label>
             <input type="text" id="qr-input" 
@@ -128,65 +66,38 @@
                    placeholder="https://toskopado.site">
         </div>
         
-    
         <button id="generate-btn" 
-                class="btn-generate w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg mb-6">
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg mb-6">
             <i class="fas fa-qrcode mr-2"></i> Gerar QR Code
         </button>
         
-
         <div id="result" class="hidden text-center">
-            <div id="qrcode" class="inline-block p-4 bg-white rounded-lg mb-4"></div>
-            <div class="flex space-x-2">
+            <div class="flex justify-center mb-6">
+                <div class="qr-wrapper">
+                    <canvas id="qrcode"></canvas>
+                    <img id="logo-overlay" class="qr-center-image" src="" alt="Logo">
+                </div>
+            </div>
+            <div class="flex space-x-2 justify-center">
                 <button id="download-btn" 
-                        class="link-item flex-1 bg-gray-800 hover:bg-gray-700 border border-gray-600 py-2 px-4 rounded-lg font-medium">
+                        class="bg-gray-800 hover:bg-gray-700 border border-gray-600 py-2 px-6 rounded-lg font-medium">
                     <i class="fas fa-download mr-2"></i> Baixar
-                </button>
-                <button id="copy-btn" 
-                        class="link-item flex-1 bg-gray-800 hover:bg-gray-700 border border-gray-600 py-2 px-4 rounded-lg font-medium">
-                    <i class="fas fa-copy mr-2"></i> Copiar
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-       
-        const characters = '01ハッカー｡◕‿◕｡┐(´∀｀)┌ﾟ+*:;ﾟｲΣ◖⚆ᴥ⚆◗✖╰⋃╯⌐■-■';
-        const directions = [
-            'fall-down', 'fall-up', 
-            'fall-left', 'fall-right'
-        ];
-        
-        function createHackerText() {
-            const letter = document.createElement('div');
-            const useGlow = Math.random() < 0.3;
-            letter.className = `hacker-text ${directions[Math.floor(Math.random() * directions.length)]} ${useGlow ? 'glow' : ''}`;
-            letter.textContent = characters[Math.floor(Math.random() * characters.length)];
-            
-            letter.style.left = `${Math.random() * 100}vw`;
-            letter.style.top = `${Math.random() * 100}vh`;
-            letter.style.animationDuration = `${5 + Math.random() * 5}s`;
-            letter.style.opacity = `${0.5 + Math.random() * 0.4}`;
-            letter.style.transform = `rotate(${Math.random() * 360}deg)`;
-            
-            document.body.appendChild(letter);
-            
-            setTimeout(() => {
-                letter.remove();
-            }, 10000);
-        }
-        
-        setInterval(() => {
-            createHackerText();
-            setTimeout(createHackerText, 100);
-            setTimeout(createHackerText, 200);
-        }, 300);
-        
       
+        const centralLogo = document.getElementById('central-logo');
+        const logoOverlay = document.getElementById('logo-overlay');
+        
+        
+        logoOverlay.src = centralLogo.src;
+
         document.getElementById('generate-btn').addEventListener('click', function() {
             const input = document.getElementById('qr-input').value.trim();
-            const qrcodeDiv = document.getElementById('qrcode');
+            const canvas = document.getElementById('qrcode');
             const resultDiv = document.getElementById('result');
             
             if (!input) {
@@ -194,62 +105,65 @@
                 return;
             }
             
-          
-            qrcodeDiv.innerHTML = '';
-            
-          
-            QRCode.toCanvas(qrcodeDiv, input, {
-                width: 200,
+            QRCode.toCanvas(canvas, input, {
+                width: 250,
+                margin: 2,
                 color: {
                     dark: '#000000',
                     light: '#ffffff'
-                },
-                margin: 1
+                }
             }, function(error) {
                 if (error) {
                     console.error(error);
-                    alert('Ocorreu um erro ao gerar o QR Code');
-                } else {
-                    resultDiv.classList.remove('hidden');
+                    alert('Erro ao gerar QR Code');
+                    return;
                 }
+                
+                resultDiv.classList.remove('hidden');
             });
         });
         
-      
         document.getElementById('download-btn').addEventListener('click', function() {
-            const canvas = document.querySelector('#qrcode canvas');
+            const canvas = document.getElementById('qrcode');
             if (!canvas) return;
+            
+        
+            const tempCanvas = document.createElement('canvas');
+            const ctx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            
+        
+            ctx.drawImage(canvas, 0, 0);
+            
+        
+            const logoSize = 50;
+            const centerX = canvas.width / 2 - logoSize / 2;
+            const centerY = canvas.height / 2 - logoSize / 2;
+            
+            
+            ctx.beginPath();
+            ctx.arc(canvas.width/2, canvas.height/2, logoSize/2, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.save();
+            ctx.clip();
+            
+            
+            ctx.drawImage(logoOverlay, centerX, centerY, logoSize, logoSize);
+            ctx.restore();
+            
+            
+            ctx.beginPath();
+            ctx.arc(canvas.width/2, canvas.height/2, logoSize/2, 0, Math.PI * 2);
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'white';
+            ctx.stroke();
             
             const link = document.createElement('a');
             link.download = 'qrcode-toskopado.png';
-            link.href = canvas.toDataURL('image/png');
+            link.href = tempCanvas.toDataURL('image/png');
             link.click();
-        });
-        
-        
-        document.getElementById('copy-btn').addEventListener('click', async function() {
-            const canvas = document.querySelector('#qrcode canvas');
-            if (!canvas) return;
-            
-            try {
-                await navigator.clipboard.write([
-                    new ClipboardItem({
-                        'image/png': new Promise((resolve) => {
-                            canvas.toBlob(resolve, 'image/png');
-                        })
-                    })
-                ]);
-                alert('QR Code copiado para a área de transferência!');
-            } catch (err) {
-                console.error('Falha ao copiar:', err);
-                alert('Não foi possível copiar. Tente baixar o QR Code.');
-            }
-        });
-        
-        
-        window.addEventListener('scroll', function(e) {
-            window.scrollTo(0, 0);
         });
     </script>
 </body>
-  </html>
+    </html>
