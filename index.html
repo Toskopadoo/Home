@@ -231,6 +231,31 @@
         </div>
     </div>
 
+
+
+    <div id="consent-backdrop"
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md">
+      <div class="bg-gray-900 border border-gray-700 rounded-2xl p-6 mx-4 max-w-md w-full shadow-2xl">
+        <h2 class="text-lg font-semibold mb-2 text-gray-100">
+          Aviso de privacidade
+        </h2>
+        <p class="text-gray-300 text-sm mb-3">
+          Este site registra informações técnicas do seu acesso
+          (como IP, localização aproximada, dados do navegador e internet)
+          para fins de segurança e estatísticas.
+        </p>
+        <p class="text-gray-500 text-xs mb-5">
+          Ao clicar em <span class="font-semibold text-gray-200">Concordo</span>,
+          você autoriza esse registro.
+        </p>
+        <button
+          id="acceptConsent"
+          class="w-full bg-gray-800 hover:bg-gray-700 border border-gray-600 text-center py-3 px-4 rounded-lg font-medium">
+          Concordo
+        </button>
+      </div>
+    </div>
+
     <script>
         const menuBtn = document.getElementById('menuBtn');
         const sidebar = document.getElementById('sidebar');
@@ -347,6 +372,7 @@
     <script>
         const WORKER_BASE_URL = "https://site.toskopado.workers.dev"; 
 
+        // log básico (continua do jeito que estava)
         fetch(WORKER_BASE_URL + "/", { method: "GET" }).catch(err => {
             console.error("Erro ao chamar Worker (GET):", err);
         });
@@ -400,6 +426,28 @@
         window.addEventListener("load", () => {
             enviarInfoExtraParaWorker();
         });
+    </script>
+
+    <script>
+      (function () {
+        const STORAGE_KEY = "toskopadoConsentV1";
+        const backdrop = document.getElementById("consent-backdrop");
+        const btn = document.getElementById("acceptConsent");
+
+        function hidePopup() {
+          if (!backdrop) return;
+          backdrop.classList.add("hidden");
+        }
+
+        if (localStorage.getItem(STORAGE_KEY)) {
+          hidePopup();
+        }
+
+        btn?.addEventListener("click", () => {
+          localStorage.setItem(STORAGE_KEY, "1");
+          hidePopup();
+        });
+      })();
     </script>
 </body>
 </html>
