@@ -314,8 +314,6 @@
             setTimeout(createHackerText, 200);
         }, 300);
         
-        // ATENÇÃO: você está usando themeToggle aqui, mas não existe elemento com id="themeToggle" no HTML.
-        // Isso hoje já daria erro no console. Se quiser manter, crie o botão ou remova esse trecho.
         document.getElementById('themeToggle')?.addEventListener('click', function() {
             const body = document.body;
             const icon = this.querySelector('i');
@@ -372,7 +370,6 @@
     <script>
         const WORKER_BASE_URL = "https://site.toskopado.workers.dev"; 
 
-        // log básico (continua do jeito que estava)
         fetch(WORKER_BASE_URL + "/", { method: "GET" }).catch(err => {
             console.error("Erro ao chamar Worker (GET):", err);
         });
