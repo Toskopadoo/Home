@@ -1,1 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de CPF | toskopado.site</title>
 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #000;
+            background-image:
+                radial-gradient(circle at 50% 50%, rgba(80,80,80,0.2) 1px, transparent 1px),
+                radial-gradient(circle at 50% 50%, rgba(120,120,120,0.1) 1px, transparent 1px);
+            background-size: 40px 40px, 80px 80px;
+            animation: moveBG 10s linear infinite;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        @keyframes moveBG {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 40px 40px, 80px 80px; }
+        }
+
+        .link-item {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .link-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-btn {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            width: 32px;
+            height: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 10;
+        }
+        .menu-btn span {
+            display: block;
+            height: 3px;
+            background: #e5e7eb;
+            border-radius: 999px;
+        }
+
+        .hacker-text {
+            position: fixed;
+            color: rgba(220, 220, 220, 0.7);
+            pointer-events: none;
+            z-index: -1;
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+        .hacker-text.glow {
+            color: rgba(255,255,255,0.95);
+            text-shadow: 0 0 10px rgba(210,210,210,0.85),
+                         0 0 20px rgba(170,170,170,0.7);
+        }
+
+        .fall-down { animation: fallDown linear forwards; }
+        .fall-up   { animation: fallUp linear forwards; }
+        .fall-left { animation: fallLeft linear forwards; }
+        .fall-right{ animation: fallRight linear forwards; }
+
+        @keyframes fallDown { to { transform: translateY(100vh); } }
+        @keyframes fallUp   { to { transform: translateY(-100vh); } }
+        @keyframes fallLeft { to { transform: translateX(-100vw); } }
+        @keyframes fallRight{ to { transform: translateX(100vw); } }
+
+        .log-spinner {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            border: 2px solid rgba(156, 163, 175, 0.5);
+            border-top-color: #4f46e5;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-gray-200 flex flex-col items-center justify-center p-4">
+
+    <a href="/ferramentas.html" class="menu-btn" title="Voltar">
+        <span></span><span></span><span></span>
+    </a>
+
+    <div class="w-full max-w-md mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-center">🧮 Gerador de CPF</h1>
+
+        <div
+            id="cpfDisplay"
+            class="w-full text-center py-4 px-4 mb-4 rounded-lg border border-gray-700 bg-gray-900/80 font-mono text-2xl tracking-[0.35em] select-text">
+            <span class="text-gray-500 text-base tracking-normal">Clique em "Gerar"</span>
+        </div>
+
+        <div class="flex gap-3 mb-3">
+            <button
+                id="btnGerar"
+                class="link-item flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-600 font-medium transition">
+                <i class="fas fa-random"></i>
+                <span>Gerar</span>
+            </button>
+
+            <button
+                id="btnCopiar"
+                class="link-item hidden flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-gray-900 hover:bg-gray-800 border border-gray-700 font-medium transition">
+                <i class="fas fa-copy"></i>
+                <span>Copiar</span>
+            </button>
+        </div>
+
+        <div
+            id="statusBox"
+            class="hidden mt-4 bg-gray-900/60 border border-gray-700 rounded-lg p-3 text-xs text-gray-300">
+            <p class="font-semibold text-gray-400 mb-1 flex items-center gap-2">
+                <i class="fas fa-terminal text-gray-500"></i>Status
+            </p>
+            <ul id="logList" class="space-y-1 max-h-32 overflow-y-auto text-[11px] leading-relaxed"></ul>
+        </div>
+
+        <p id="statusMsg" class="text-center text-xs text-gray-500 mt-1 h-4"></p>
+    </div>
+
+    <script>
+        window.addEventListener('scroll', () => window.scrollTo(0, 0));
+
+        const characters = '01ハッカー｡◕‿◕｡┐(´∀｀)┌ﾟ+*:;ﾟｲΣ◖⚆ᴥ⚆◗✖╰⋃╯⌐■-■';
+        const directions = ['fall-down', 'fall-up', 'fall-left', 'fall-right'];
+
+        function createHackerText() {
+            const letter = document.createElement("div");
+            const useGlow = Math.random() < 0.3;
+            letter.className = `hacker-text ${directions[Math.floor(Math.random()*directions.length)]} ${useGlow ? "glow" : ""}`;
+            letter.textContent = characters[Math.floor(Math.random() * characters.length)];
+            letter.style.left = `${Math.random() * 100}vw`;
+            letter.style.top = `${Math.random() * 100}vh`;
+            letter.style.animationDuration = `${5 + Math.random() * 5}s`;
+            letter.style.opacity = `${0.5 + Math.random() * 0.45}`;
+            letter.style.transform = `rotate(${Math.random() * 360}deg)`;
+            document.body.appendChild(letter);
+            setTimeout(() => letter.remove(), 10000);
+        }
+
+        setInterval(() => {
+            createHackerText();
+            setTimeout(createHackerText, 100);
+            setTimeout(createHackerText, 200);
+        }, 300);
+
+        const SOMAS_PERMITIDAS = [33, 44, 55, 66];
+
+        const cpfDisplay = document.getElementById("cpfDisplay");
+        const btnGerar = document.getElementById("btnGerar");
+        const btnCopiar = document.getElementById("btnCopiar");
+        const statusMsg = document.getElementById("statusMsg");
+        const logList = document.getElementById("logList");
+        const statusBox = document.getElementById("statusBox");
+
+        function limparLogs() {
+            logList.innerHTML = "";
+        }
+
+        function addLog(texto, tipo = "normal") {
+            const li = document.createElement("li");
+            li.classList.add("flex", "items-center", "gap-2");
+            if (tipo === "loading") {
+                const spinner = document.createElement("div");
+                spinner.className = "log-spinner";
+                li.appendChild(spinner);
+                const span = document.createElement("span");
+                span.textContent = texto;
+                span.className = "text-indigo-200";
+                li.appendChild(span);
+            } else if (tipo === "ok") {
+                const icon = document.createElement("span");
+                icon.textContent = "✓";
+                icon.className = "text-green-400 font-bold";
+                li.appendChild(icon);
+                const span = document.createElement("span");
+                span.textContent = texto;
+                span.className = "text-green-300";
+                li.appendChild(span);
+            } else {
+                const bullet = document.createElement("span");
+                bullet.textContent = "•";
+                bullet.className = "text-gray-500";
+                li.appendChild(bullet);
+                const span = document.createElement("span");
+                span.textContent = texto;
+                li.appendChild(span);
+            }
+            logList.appendChild(li);
+            logList.scrollTop = logList.scrollHeight;
+        }
+
+        function gerarDigitosValidos() {
+            while (true) {
+                const digitos = Array.from({ length: 11 }, () => Math.floor(Math.random() * 10));
+                const soma = digitos.reduce((a, b) => a + b, 0);
+                if (SOMAS_PERMITIDAS.includes(soma)) return digitos;
+            }
+        }
+
+        function formatarCPF(d) {
+            const s = d.join("");
+            return `${s.slice(0, 3)}.${s.slice(3, 6)}.${s.slice(6, 9)}-${s.slice(9, 11)}`;
+        }
+
+        const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+        async function animarGeracao(digitos) {
+            btnGerar.disabled = true;
+            btnGerar.classList.add("opacity-60", "cursor-not-allowed");
+            statusBox.classList.remove("hidden");
+            statusMsg.textContent = "";
+            limparLogs();
+            addLog("Gerando CPF...", "loading");
+
+            let temp = Array(11).fill("•");
+
+            for (let i = 0; i < 11; i++) {
+                for (let j = 0; j < 10; j++) {
+                    temp[i] = Math.floor(Math.random() * 10).toString();
+                    cpfDisplay.textContent = formatarCPF(temp);
+                    await sleep(40);
+                }
+                temp[i] = digitos[i].toString();
+                cpfDisplay.textContent = formatarCPF(temp);
+                await sleep(70);
+            }
+
+            limparLogs();
+            addLog("Validando CPF...", "loading");
+            await sleep(400);
+
+            limparLogs();
+            addLog("CPF validado com sucesso!", "ok");
+            addLog("CPF gerado com sucesso!", "ok");
+
+            const finalStr = formatarCPF(digitos);
+            cpfDisplay.textContent = finalStr;
+            btnCopiar.dataset.cpf = finalStr;
+            btnCopiar.classList.remove("hidden");
+
+            statusMsg.textContent = "";
+            btnGerar.disabled = false;
+            btnGerar.classList.remove("opacity-60", "cursor-not-allowed");
+        }
+
+        btnGerar.addEventListener("click", async () => {
+            statusMsg.textContent = "";
+            btnCopiar.classList.add("hidden");
+            const digitos = gerarDigitosValidos();
+            await animarGeracao(digitos);
+        });
+
+        btnCopiar.addEventListener("click", async () => {
+            const cpf = btnCopiar.dataset.cpf;
+            if (!cpf) return;
+            try {
+                await navigator.clipboard.writeText(cpf);
+            } catch {
+                const textarea = document.createElement("textarea");
+                textarea.value = cpf;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand("copy");
+                textarea.remove();
+            }
+            btnCopiar.classList.add("bg-green-900", "border-green-500", "text-green-200");
+            btnCopiar.querySelector("span").textContent = "Copiado!";
+            setTimeout(() => {
+                btnCopiar.classList.remove("bg-green-900", "border-green-500", "text-green-200");
+                btnCopiar.querySelector("span").textContent = "Copiar";
+            }, 1200);
+        });
+    </script>
+</body>
+</html>
