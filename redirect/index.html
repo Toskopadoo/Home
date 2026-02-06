@@ -1,14 +1,71 @@
-/<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="refresh" content="0; url=https://mercadolivre.com/sec/2JHApyd" />
-    <title></title>
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        location.replace('https://mercadolivre.com/sec/2JHApyd');
-      });
-    </script>
-  </head>
-  <body></body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botões Responsivos</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        button {
+            flex: 1 1 200px; /* responsivo */
+            max-width: 250px;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #007bff;
+            color: #fff;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        @media (max-width: 500px) {
+            button {
+                font-size: 15px;
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h2>Meus Links</h2>
+
+<div class="container">
+    <button onclick="window.open('https://google.com', '_blank')">Google</button>
+    <button onclick="window.open('https://youtube.com', '_blank')">YouTube</button>
+    <button onclick="window.open('https://github.com', '_blank')">GitHub</button>
+    <button onclick="window.open('https://twitter.com', '_blank')">Twitter</button>
+    <button onclick="window.open('https://instagram.com', '_blank')">Instagram</button>
+    <button onclick="window.open('https://facebook.com', '_blank')">Facebook</button>
+    <button onclick="window.open('https://reddit.com', '_blank')">Reddit</button>
+    <button onclick="window.open('https://wikipedia.org', '_blank')">Wikipedia</button>
+    <button onclick="window.open('https://openai.com', '_blank')">OpenAI</button>
+    <button onclick="window.open('https://example.com', '_blank')">Outro Link</button>
+</div>
+
+</body>
 </html>
